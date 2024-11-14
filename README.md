@@ -2,6 +2,8 @@
 
 Backend App developed using NodeJs and Mongo DB.
 
+Note: This project is currently under active development with ongoing updates for further improvements and completion.
+
 Getting Started
 Follow these steps to set up and run the project locally:
 
