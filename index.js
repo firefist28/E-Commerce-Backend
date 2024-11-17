@@ -74,6 +74,21 @@ app.get("/product/:id", async (req, resp) => {
     }
 });
 
+app.put('/updateProduct/:id', async (req, resp) => {
+    try {
+        let result = await Product.updateOne(
+            { _id: req.params.id }, {
+            $set: req.body
+        })
+        resp.send(result);
+    } catch (error) {
+        resp.status(500).json({
+            message: 'Internal Server Error',
+            error: error.message,
+        });
+    }
+});
+
 
 //const mongoose = require('mongoose');
 
