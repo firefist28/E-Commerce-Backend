@@ -13,17 +13,17 @@ app.use(express.json());
 app.use(cors());
 
 app.post("/register", async (req, resp) => {
-    let user = new User(req.body);
-    let result = await user.save();
+    let userBody = new User(req.body);
+    let user = await userBody.save();
 
-    result = result.toObject();
-    delete result.password;
+    user = user.toObject();
+    delete user.password;
 
-    jwt.sign({ result }, jwtKey, { expiresIn: '2h' }, (err, token) => {
+    jwt.sign({ user }, jwtKey, { expiresIn: '2h' }, (err, token) => {
         if (err) {
-            resp.send({ result: "Something Went Wrong." });
+            resp.send({ user: "Something Went Wrong." });
         }
-        resp.send({ result, auth: token });
+        resp.send({ user, auth: token });
     });
 });
 
