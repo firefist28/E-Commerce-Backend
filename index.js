@@ -89,6 +89,23 @@ app.put('/updateProduct/:id', async (req, resp) => {
     }
 });
 
+app.get("/search/:key", async (req, resp) => {
+    try {
+        let result = await Product.find({
+            "$or": [
+                { name: { $regex: req.params.key } },
+                { company: { $regex: req.params.key } },
+                { category: { $regex: req.params.key } }
+            ]
+        });
+        resp.send(result);
+    } catch (error) {
+        resp.status(500).json({
+            message: 'Internal Server Error',
+            error: error.message,
+        });
+    }
+});
 
 //const mongoose = require('mongoose');
 
