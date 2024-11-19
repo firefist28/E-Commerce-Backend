@@ -58,11 +58,33 @@ app.post("/addProduct", validateToken, async (req, resp) => {
 });
 
 app.get("/getProducts", validateToken, async (req, resp) => {
-    let products = await Product.find();
-    if (products.length > 0) {
-        resp.send(products);
-    } else {
-        resp.send({ result: "No Products Present" });
+    // Parse query parameters for pagination
+    const page = parseInt(req.query.page) || 1; // Default to page 1
+    const limit = parseInt(req.query.limit) || 5; // Default to 5 products per page
+    const skip = (page - 1) * limit; // Calculate the number of documents to skip
+
+    try {
+        // Fetch paginated products
+        const products = await Product.find()
+            .skip(skip) // Skip the specified number of documents
+            .limit(limit); // Limit the number of documents
+
+        // Count the total number of products
+        const totalProducts = await Product.countDocuments();
+
+        // Send the paginated response
+        if (products.length > 0) {
+            resp.json({
+                data: products,
+                totalProducts,
+                totalPages: Math.ceil(totalProducts / limit),
+                currentPage: page,
+            });
+        } else {
+            resp.json({ result: "No Products Present" });
+        }
+    } catch (error) {
+        resp.status(500).json({ message: "Error fetching products", error: error.message });
     }
 });
 
