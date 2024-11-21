@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
 
 require('./db/config');
 
@@ -13,41 +14,65 @@ app.use(express.json());
 app.use(cors());
 
 app.post("/register", async (req, resp) => {
-    let userBody = new User(req.body);
-    let user = await userBody.save();
+    try {
+        //hash the password
+        const saltRounds = 10;
+        const hashedPassword = await bcrypt.hash(req.body.password, saltRounds);
 
-    user = user.toObject();
-    delete user.password;
+        req.body.password = hashedPassword;
 
-    jwt.sign({ user }, jwtKey, { expiresIn: '2h' }, (err, token) => {
-        if (err) {
-            resp.send({ user: "Something Went Wrong." });
-        }
-        resp.send({ user, auth: token });
-    });
+        let userBody = new User(req.body);
+        let user = await userBody.save();
+
+        user = user.toObject();
+        delete user.password;
+
+        jwt.sign({ user }, jwtKey, { expiresIn: '2h' }, (err, token) => {
+            if (err) {
+                resp.send({ user: "Something Went Wrong." });
+            }
+            resp.send({ user, auth: token });
+        });
+    } catch (error) {
+        resp.status(500).send({ error: "Internal Server Error" });
+    }
 });
 
 
 app.post("/login", async (req, resp) => {
-    //To remove password from response body
+    try {
+        const { email, password } = req.body;
 
-    if (req.body.password && req.body.email) {
-        let user = await User.findOne(req.body).select("-password");
-        if (user) {
-            jwt.sign({ user }, jwtKey, { expiresIn: '2h' }, (err, token) => {
-                if (err) {
-                    resp.send({ result: "Something Went Wrong." });
+        if (email && password) {
+            let user = await User.findOne({ email });
+
+            if (user) {
+                const isPasswordValid = await bcrypt.compare(password, user.password);
+                if (isPasswordValid) {
+                    // Remove password from response
+                    user = user.toObject();
+                    delete user.password;
+
+                    //Generate jwt token
+                    jwt.sign({ user }, jwtKey, { expiresIn: '2h' }, (err, token) => {
+                        if (err) {
+                            resp.status(500).send({ result: "Something Went Wrong." });
+                        } else {
+                            resp.send({ user, auth: token });
+                        }
+                    });
+                } else {
+                    resp.status(401).send({ result: "Invalid Credentials" });
                 }
-                resp.send({ user, auth: token });
-            });
-
+            } else {
+                resp.status(404).send({ result: "No User Found" });
+            }
         } else {
-            resp.send({ result: "No User Found" });
+            resp.status(400).send({ result: "Email or Password Missing" });
         }
-    } else {
-        resp.send({ result: "Username or Password Not Found" });
+    } catch (error) {
+        resp.status(500).send({ error: "Internal Server Error" });
     }
-
 });
 
 app.post("/addProduct", validateToken, async (req, resp) => {
