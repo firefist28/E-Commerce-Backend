@@ -14,7 +14,7 @@ exports.register = async (req, resp) => {
             user = user.toObject();
             delete user.password;
 
-            const token = jwt.sign({ user }, process.env.JWT_KEY, { expiresIn: '2h' });
+            const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_KEY, { expiresIn: '2h' });
             resp.json({ user, auth: token });
         } else {
             resp.status(400).send({ error: "Bad Request" });
@@ -36,7 +36,7 @@ exports.login = async (req, resp) => {
             user = user.toObject();
             delete user.password;
 
-            const token = jwt.sign({ user }, process.env.JWT_KEY, { expiresIn: '2h' });
+            const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_KEY, { expiresIn: '2h' });
             resp.json({ user, auth: token });
         }
         if (!isPasswordValid) return resp.status(401).send({ result: "Invalid Credentials" });
