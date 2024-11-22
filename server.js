@@ -3,6 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const connectDB = require('./config/db');
 
+const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
 const productRoutes = require('./routes/productRoutes');
 
@@ -12,12 +13,14 @@ connectDB();
 app.use(express.json());
 app.use(cors());
 
+//routes
+app.use('/api/auth', authRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/product', productRoutes);
 
 app.use((err, req, resp, next) => {
     console.error(err.stack);
-    resp.status(500).send({ error: "Something Went Wrong" });
+    resp.status(500).send({ error: `Something Went Wrong ${error}` });
 });
 
 const PORT = process.env.PORT || 5000;
