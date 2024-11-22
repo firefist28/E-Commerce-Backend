@@ -1,4 +1,4 @@
-const validateRole = (requiredRole) => {
+const validateRole = (...requiredRole) => {
     return (req, res, next) => {
         if (!requiredRole.includes(req.user.role)) {
             return res.status(403).json({ message: 'Access Denied' });

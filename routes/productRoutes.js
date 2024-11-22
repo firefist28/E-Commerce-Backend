@@ -8,15 +8,16 @@ const {
     searchProduct
 } = require('../controllers/productController');
 const validateToken = require('../middlewares/validateToken');
+const authorizeRoles = require('../middlewares/validateRole');
 
 const router = express.Router();
 
 // Defining routes
-router.post('/', validateToken, addProduct);
-router.get('/', validateToken, getProducts);
-router.get('/:id', validateToken, getProductById);
-router.put('/:id', validateToken, updateProduct);
-router.delete('/:id', validateToken, deleteProduct);
-router.get('/search/:key', validateToken, searchProduct);
+router.post('/', validateToken, authorizeRoles('admin'), addProduct);
+router.get('/', validateToken, authorizeRoles('admin', 'user'), getProducts);
+router.get('/:id', validateToken, authorizeRoles('admin', 'user'), getProductById);
+router.put('/:id', validateToken, authorizeRoles('admin'), updateProduct);
+router.delete('/:id', validateToken, authorizeRoles('admin'), deleteProduct);
+router.get('/search/:key', validateToken, authorizeRoles('admin', 'user'), searchProduct);
 
 module.exports = router;
