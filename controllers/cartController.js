@@ -73,10 +73,8 @@ exports.removeFromCart = async (req, res) => {
             // Removing the item from the cart's items array
             cart.items.splice(itemIndex, 1);
             await cart.save();
-            res.status(200).json({ message: 'Item removed successfully', cart });
+            return res.status(200).json({ message: 'Item removed successfully', cart });
         }
-
-        res.status(200).json(cart);
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'An error occurred while retrieving the cart' });
