@@ -53,3 +53,32 @@ exports.getCart = async (req, res) => {
         res.status(500).json({ message: 'An error occurred while retrieving the cart' });
     }
 };
+
+exports.removeFromCart = async (req, res) => {
+    try {
+        const userId = req.body.userId;
+        console.log('user id for cart ' + userId);
+        const itemId = req.body.itemId;
+
+        // Find the cart for the user
+        const cart = await Cart.findOne({ userId });
+
+        if (!cart) {
+            return res.status(404).json({ message: 'Cart not found' });
+        } else {
+            const itemIndex = cart.items.findIndex(item => item._id.toString() === itemId);
+            if (itemIndex === -1) {
+                return res.status(404).json({ message: 'Item not found in cart' });
+            }
+            // Removing the item from the cart's items array
+            cart.items.splice(itemIndex, 1);
+            await cart.save();
+            res.status(200).json({ message: 'Item removed successfully', cart });
+        }
+
+        res.status(200).json(cart);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'An error occurred while retrieving the cart' });
+    }
+};
