@@ -1,0 +1,9 @@
+const express = require('express');
+const { addToOrder } = require('../controllers/orderController');
+const validateToken = require('../middlewares/validateToken');
+const authorizeRoles = require('../middlewares/validateRole');
+
+const router = express.Router();
+router.post('/', validateToken, authorizeRoles('user'), addToOrder);
+
+module.exports = router;
