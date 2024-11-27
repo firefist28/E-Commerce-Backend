@@ -24,3 +24,22 @@ exports.addToOrder = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 }
+
+exports.getOrder = async (req, res) => {
+    try {
+        const userId = req.params.id;
+        console.log('user id for order ' + userId);
+
+        // Find the cart for the user
+        const order = await Order.findOne({ userId }).populate('items.productId', 'name');
+
+        if (!order) {
+            return res.status(404).json({ message: 'Order not found' });
+        }
+
+        res.status(200).json(order);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'An error occurred while retrieving the order' });
+    }
+};
