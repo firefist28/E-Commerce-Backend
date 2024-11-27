@@ -4,6 +4,7 @@ const Product = require('../models/Product');
 exports.addProduct = async (req, res) => {
     try {
         const product = new Product(req.body);
+        product.isDeleted = false;
         const result = await product.save();
         res.status(201).json(result);
     } catch (error) {
@@ -18,8 +19,8 @@ exports.getProducts = async (req, res) => {
     const skip = (page - 1) * limit;
 
     try {
-        const products = await Product.find().skip(skip).limit(limit);
-        const totalProducts = await Product.countDocuments();
+        const products = await Product.find({ isDeleted: false }).skip(skip).limit(limit);
+        const totalProducts = await Product.countDocuments({ isDeleted: false });
 
         if (products.length > 0) {
             res.json({
@@ -72,7 +73,7 @@ exports.updateProduct = async (req, res) => {
 // Delete a product by ID
 exports.deleteProduct = async (req, res) => {
     try {
-        const result = await Product.findByIdAndDelete(req.params.id);
+        const result = await Product.findByIdAndUpdate(req.params.id, { isDeleted: true });
         if (result) {
             res.json({ message: 'Product deleted successfully' });
         } else {
