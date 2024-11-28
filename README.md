@@ -1,8 +1,19 @@
 # E-Commerce-Backend
+Backend App developed using NodeJs and Mongo DB for E-Commerce Web App. Project includes:
 
-Backend App developed using NodeJs and Mongo DB.
+- Frontend: Built with React, styled using Bootstrap, and Redux for role-based access control (RBAC). Features include user authentication, product search, pagination, cart management, and order placement.
+- Backend: Express.js APIs with middleware for token validation and role authorization. Incorporates session expiry management and robust error handling.
+- Database: MongoDB with models for users, products, cart, and orders.
 
-Note: This project is currently under active development with ongoing updates for further improvements and completion.
+Key Features:
+- User authentication with JWT.
+- Role-based access control for admin and user functionalities.
+- Axios interceptors for secure API calls.
+- Toast notifications for alerts.
+- Pagination for product listing.
+- Protected routes for authorized access.
+
+This scalable and responsive platform provides a strong foundation for further enhancements.
 
 Getting Started
 Follow these steps to set up and run the project locally:
@@ -17,13 +28,10 @@ Steps
 
    Clone the backend repository:
    git clone https://github.com/firefist28/E-Commerce-Backend
-2. Install Dependencies
+2. Setup Mongo Db - e-commerce
+3. Make necessary changes in .env file as per your need.
+4. Install Dependencies
    run -> npm install
-3. Setup MongoDB
-   i. Start MongoDB and create a new database named e-commerce.
-   ii. Inside the e-commerce database, create two collections:
-   iii. users: stores user information. (Fields - name, email, password).
-   iv. products: stores product information. (Fields - name, price, category, userId, company) 
 5. Run the Application
    run -> nodemon
 6. Access APIs
